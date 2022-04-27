@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myshoplist.domain.ShopItem
 import com.example.myshoplist.domain.ShopListRepository
 import java.lang.RuntimeException
+import java.util.*
+import kotlin.Comparator
 
 object ShopListRepositoryImpl: ShopListRepository {
 
     private val shopListLD = MutableLiveData<List<ShopItem>>()
-    private var shopList = mutableListOf<ShopItem>()
+    private var shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private var shopItemId = 0
 
     init {
