@@ -7,6 +7,7 @@ import com.example.myshoplist.domain.ShopListRepository
 import java.lang.RuntimeException
 import java.util.*
 import kotlin.Comparator
+import kotlin.random.Random
 
 object ShopListRepositoryImpl: ShopListRepository {
 
@@ -15,8 +16,8 @@ object ShopListRepositoryImpl: ShopListRepository {
     private var shopItemId = 0
 
     init {
-        for (i in 0 until 10) {
-            addShopItem(ShopItem("name $i", i, true))
+        for (i in 0 until 1000) {
+            addShopItem(ShopItem("name $i", i, Random.nextBoolean()))
         }
     }
 
