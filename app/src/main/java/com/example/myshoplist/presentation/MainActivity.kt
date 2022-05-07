@@ -3,6 +3,7 @@ package com.example.myshoplist.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -14,15 +15,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
 
+    private var fragmentContainer: FragmentContainerView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        fragmentContainer = findViewById(R.id.container_view_fragment)
         val itemAddBtn = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+
+
         itemAddBtn.setOnClickListener {
-            val intent = ShopItemActivity.newIntentAddMode(this)
-            startActivity(intent)
+            if (fragmentContainer == null) {
+                val intent = ShopItemActivity.newIntentAddMode(this)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceAddMode()
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.container_view_fragment, fragment)
+                    .commit()
+            }
         }
+
 
         setRecyclerView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -57,9 +71,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpClickListener() {
+
         shopListAdapter.onShopItemClickListener = {
-            val intent = ShopItemActivity.newIntentEditMode(this, it.id)
-            startActivity(intent)
+            if (fragmentContainer == null) {
+                val intent = ShopItemActivity.newIntentEditMode(this, it.id)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceEditMode(it.id)
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.container_view_fragment, fragment)
+                    .commit()
+            }
         }
     }
 
@@ -75,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             ): Boolean {
                 return false
             }
+
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(item)
