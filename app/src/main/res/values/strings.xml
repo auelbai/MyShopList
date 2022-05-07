@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyShopList</string>
+    <string name="nameTILError">Incorrect name</string>
+    <string name="countTILError">Incorrect count</string>
 </resources>

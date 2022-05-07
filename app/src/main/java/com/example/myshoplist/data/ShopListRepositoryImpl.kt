@@ -16,7 +16,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     private var shopItemId = 0
 
     init {
-        for (i in 0 until 1000) {
+        for (i in 0 until 100) {
             addShopItem(ShopItem("name $i", i, Random.nextBoolean()))
         }
     }
