@@ -1,5 +1,6 @@
 package com.example.myshoplist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,10 +25,24 @@ class ShopItemFragment : Fragment() {
     private lateinit var saveButton: Button
 
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishListener: OnEditingFinishListener
 
     private var screenMode = UNKNOWN_MODE
     private var shopItemId = ShopItem.UNDEFINED_ID
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishListener) {
+            onEditingFinishListener = context
+        } else {
+            throw RuntimeException("activity must realize interface - OnEditingFinishListener")
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +55,6 @@ class ShopItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        parseParams()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews(view)
         addTextChangeListener()
@@ -69,7 +83,7 @@ class ShopItemFragment : Fragment() {
         }
 
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishListener.onEditingFinish()
         }
     }
 
@@ -153,6 +167,10 @@ class ShopItemFragment : Fragment() {
             }
             shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
+    }
+
+    interface OnEditingFinishListener {
+        fun onEditingFinish()
     }
 
     companion object {

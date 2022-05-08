@@ -3,6 +3,8 @@ package com.example.myshoplist.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -10,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myshoplist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
@@ -26,14 +28,11 @@ class MainActivity : AppCompatActivity() {
 
 
         itemAddBtn.setOnClickListener {
-            if (fragmentContainer == null) {
+            if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentAddMode(this)
                 startActivity(intent)
             } else {
-                val fragment = ShopItemFragment.newInstanceAddMode()
-                supportFragmentManager.beginTransaction()
-                    .add(R.id.container_view_fragment, fragment)
-                    .commit()
+                launchFragment(ShopItemFragment.newInstanceAddMode())
             }
         }
 
@@ -73,16 +72,25 @@ class MainActivity : AppCompatActivity() {
     private fun setUpClickListener() {
 
         shopListAdapter.onShopItemClickListener = {
-            if (fragmentContainer == null) {
+            if (isOnePaneMode()) {
                 val intent = ShopItemActivity.newIntentEditMode(this, it.id)
                 startActivity(intent)
             } else {
-                val fragment = ShopItemFragment.newInstanceEditMode(it.id)
-                supportFragmentManager.beginTransaction()
-                    .add(R.id.container_view_fragment, fragment)
-                    .commit()
+                launchFragment(ShopItemFragment.newInstanceEditMode(it.id))
             }
         }
+    }
+
+    private fun isOnePaneMode(): Boolean {
+        return fragmentContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container_view_fragment, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun setUpSwipeListener(recyclerView: RecyclerView?) {
@@ -105,6 +113,11 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    override fun onEditingFinish() {
+        Toast.makeText(this, "Success", Toast.LENGTH_LONG).show()
+        supportFragmentManager.popBackStack()
     }
 
 }
