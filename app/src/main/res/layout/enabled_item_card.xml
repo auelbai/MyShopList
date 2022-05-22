@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+        <variable
+            name="shopItem"
+            type="com.example.myshoplist.domain.ShopItem" />
+    </data>
+
     <androidx.cardview.widget.CardView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="2dp"
         app:cardCornerRadius="7dp"
@@ -24,18 +33,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Сметана"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
+                android:text="@{shopItem.name}"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/countTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10"
-                android:textSize="18sp"
-                android:textColor="@color/white"/>
+                android:text="@{String.valueOf(shopItem.count)}"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+</layout>
