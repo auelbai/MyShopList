@@ -8,15 +8,14 @@ import com.example.myshoplist.domain.ShopItem
 import com.example.myshoplist.domain.ShopListRepository
 import java.lang.RuntimeException
 import java.util.*
+import javax.inject.Inject
 import kotlin.Comparator
 import kotlin.random.Random
 
-class ShopListRepositoryImpl(
-    application: Application
+class ShopListRepositoryImpl @Inject constructor(
+    private val mapper: Mapper,
+    private val shopListDao: ShopListDao
 ): ShopListRepository {
-
-    private val shopListDao = AppDatabase.getInstance(application).shopListDao()
-    private val mapper = Mapper()
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         shopListDao.addShopItemDao(mapper.mapEntityToDbModel(shopItem))
