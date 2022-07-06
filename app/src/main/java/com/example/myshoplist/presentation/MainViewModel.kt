@@ -5,9 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myshoplist.data.ShopListRepositoryImpl
 import com.example.myshoplist.domain.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
@@ -24,7 +21,6 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch {
             deleteShopItemUseCase.deleteShopItem(shopItem)
         }
-
     }
 
     fun changeEnableState(shopItem: ShopItem) {

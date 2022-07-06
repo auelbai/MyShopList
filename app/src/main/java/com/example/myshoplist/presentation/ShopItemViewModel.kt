@@ -7,9 +7,6 @@ import com.example.myshoplist.domain.AddShopItemUseCase
 import com.example.myshoplist.domain.EditShopItemUseCase
 import com.example.myshoplist.domain.GetShopItemUseCase
 import com.example.myshoplist.domain.ShopItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
