@@ -1,6 +1,8 @@
 package com.example.myshoplist.presentation
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +16,7 @@ import com.example.myshoplist.databinding.FragmentShopItemBinding
 import com.example.myshoplist.domain.ShopItem
 import java.lang.RuntimeException
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopItemFragment : Fragment() {
 
@@ -113,9 +116,21 @@ class ShopItemFragment : Fragment() {
 
     private fun launchAddScreenMode() {
         binding.saveButton.setOnClickListener {
-            val name = binding.etName.text?.toString()
-            val count = binding.etCount.text?.toString()
-            viewModel.addShopItem(name, count)
+//            val name = binding.etName.text?.toString()
+//            val count = binding.etCount.text?.toString()
+//            viewModel.addShopItem(name, count)
+
+            thread {
+                context?.contentResolver?.insert(
+                    Uri.parse("content://com.example.myshoplist/shop_list"),
+                    ContentValues().apply {
+                        put("id", 0)
+                        put("name", binding.etName.text?.toString())
+                        put("count", binding.etCount.text?.toString()?.toInt())
+                        put("enabled", true)
+                    }
+                )
+            }
         }
     }
 
@@ -123,9 +138,19 @@ class ShopItemFragment : Fragment() {
         viewModel.getShopItem(shopItemId)
 
         binding.saveButton.setOnClickListener {
-            val name = binding.etName.text?.toString()
-            val count = binding.etCount.text?.toString()
-            viewModel.editShopItem(name, count)
+//            val name = binding.etName.text?.toString()
+//            val count = binding.etCount.text?.toString()
+//            viewModel.editShopItem(name, count)
+
+            context?.contentResolver?.update(
+                Uri.parse("content://com.example.myshoplist/shop_list"),
+                ContentValues().apply {
+                    put("name", binding.etName.text?.toString())
+                    put("count", binding.etCount.text?.toString()?.toInt())
+                },
+                null,
+                arrayOf(shopItemId.toString())
+            )
         }
 
     }

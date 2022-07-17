@@ -1,5 +1,6 @@
 package com.example.myshoplist.presentation
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +12,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myshoplist.R
 import com.example.myshoplist.ShopListApp
+import com.example.myshoplist.data.ShopListProvider
 import com.example.myshoplist.databinding.ActivityMainBinding
+import com.example.myshoplist.domain.ShopItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener {
 
@@ -51,6 +55,31 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+
+        thread {
+            val cursor = contentResolver.query(
+                Uri.parse("content://com.example.myshoplist/shop_list"),
+                null,
+                null,
+                null,
+                null
+            )
+
+            while (cursor?.moveToNext() == true) {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val count = cursor.getInt(cursor.getColumnIndexOrThrow("count"))
+                val enabled = cursor.getInt(cursor.getColumnIndexOrThrow("enabled")) > 0
+                val shopItem = ShopItem(
+                    id = id,
+                    name = name,
+                    count = count,
+                    enabled = enabled
+                )
+                Log.d("MainActivity", shopItem.toString())
+            }
+            cursor?.close()
         }
     }
 
@@ -117,7 +146,15 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-                viewModel.deleteShopItem(item)
+                //viewModel.deleteShopItem(item)
+
+                thread {
+                    contentResolver.delete(
+                        Uri.parse("content://com.example.myshoplist/shop_list"),
+                        null,
+                        arrayOf(item.id.toString())
+                    )
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(callback)
